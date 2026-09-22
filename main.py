@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-from sqlalchemy import select, and_, or_
+from sqlalchemy import select, and_, or_, Column, Integer, String, Text, ForeignKey, BigInteger, Date, Time, DateTime, Float
 from pydantic import BaseModel
 from datetime import date, time, datetime, timedelta
 from typing import List, Optional
@@ -21,38 +21,39 @@ Base = declarative_base()
 class Service(Base):
     __tablename__ = "services"
     
-    id = Base.Column(Base.Integer, primary_key=True)
-    name = Base.Column(Base.String(100), nullable=False)
-    price = Base.Column(Base.Integer, nullable=False)
-    duration_minutes = Base.Column(Base.Integer, nullable=False)
-    description = Base.Column(Base.Text)
-    icon = Base.Column(Base.String(10))
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    price = Column(Integer, nullable=False)
+    duration_minutes = Column(Integer, nullable=False)
+    description = Column(Text)
+    icon = Column(String(10))
 
 class Master(Base):
     __tablename__ = "masters"
     
-    id = Base.Column(Base.Integer, primary_key=True)
-    name = Base.Column(Base.String(100), nullable=False)
-    photo_url = Base.Column(Base.String(500))
-    rating = Base.Column(Base.Float, default=0.0)
-    experience_years = Base.Column(Base.Integer, default=0)
-    specialties = Base.Column(Base.Text)  # JSON array as string
-    work_start = Base.Column(Base.Time, default=time(10, 0))
-    work_end = Base.Column(Base.Time, default=time(20, 0))
+    id = Column(Integer, primary_key=True)
+    name = Column(String(100), nullable=False)
+    photo_url = Column(String(500))
+    rating = Column(Float, default=0.0)
+    experience_years = Column(Integer, default=0)
+    specialties = Column(Text)
+    work_start = Column(Time, default=time(10, 0))
+    work_end = Column(Time, default=time(20, 0))
 
 class Booking(Base):
     __tablename__ = "bookings"
     
-    id = Base.Column(Base.Integer, primary_key=True)
-    service_id = Base.Column(Base.Integer, Base.ForeignKey("services.id"))
-    master_id = Base.Column(Base.Integer, Base.ForeignKey("masters.id"))
-    telegram_user_id = Base.Column(Base.BigInteger, nullable=False)
-    client_name = Base.Column(Base.String(200))
-    date = Base.Column(Base.Date, nullable=False)
-    start_time = Base.Column(Base.Time, nullable=False)
-    end_time = Base.Column(Base.Time, nullable=False)
-    status = Base.Column(Base.String(20), default="pending")
-    created_at = Base.Column(Base.DateTime, default=datetime.utcnow)
+    id = Column(Integer, primary_key=True)
+    service_id = Column(Integer, ForeignKey("services.id"))
+    master_id = Column(Integer, ForeignKey("masters.id"))
+    telegram_user_id = Column(BigInteger, nullable=False)
+    client_name = Column(String(200))
+    date = Column(Date, nullable=False)
+    start_time = Column(Time, nullable=False)
+    end_time = Column(Time, nullable=False)
+    status = Column(String(20), default="pending")
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 # Pydantic schemas
 class ServiceResponse(BaseModel):
